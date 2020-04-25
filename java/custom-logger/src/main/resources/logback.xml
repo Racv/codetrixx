@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="COLOR_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>
+                %white(%-5p) %red(${PID}) %yellow(---) %green([%t]) %blue(%-30.40logger{0}) %yellow(:) %yellow(%m) %n
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="PRETTY_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <jsonGeneratorDecorator class="com.github.skjolber.decorators.SyntaxHighlightingDecorator"/>
+            <fieldNames>
+                <timestamp>timeStamp</timestamp>
+                <message>message</message>
+                <logger>logger</logger>
+                <thread>thread</thread>
+                <level>level</level>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
+                <stackTrace>stackTrace</stackTrace>
+            </fieldNames>
+            <includeMdcKeyName>customTrace</includeMdcKeyName>
+        </encoder>
+    </appender>
+
+
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <timestamp>timeStamp</timestamp>
+                <message>message</message>
+                <logger>logger</logger>
+                <thread>thread</thread>
+                <level>level</level>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
+                <stackTrace>stackTrace</stackTrace>
+            </fieldNames>
+            <includeMdcKeyName>traceId</includeMdcKeyName>
+        </encoder>
+    </appender>
+
+    <appender name="AsyncConsolePrettyAppender" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="PRETTY_STDOUT" />
+        <queueSize>10000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+    </appender>
+
+    <appender name="AsyncConsoleAppender" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT" />
+        <queueSize>10000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+    </appender>
+
+    <appender name="AsyncConsoleColorAppender" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="COLOR_STDOUT" />
+        <queueSize>10000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+    </appender>
+
+    <logger name="org.springframework" additivity="false" level="INFO">
+        <appender-ref ref="AsyncConsoleAppender"/>
+    </logger>
+
+
+    <logger name="prettyLogger" additivity="false" level="INFO">
+        <appender-ref ref="AsyncConsolePrettyAppender"/>
+    </logger>
+
+    <logger name="colorLogger" additivity="false" level="INFO">
+        <appender-ref ref="AsyncConsoleColorAppender"/>
+    </logger>
+
+    <logger name="simpleLogger" additivity="false" level="INFO">
+        <appender-ref ref="AsyncConsoleAppender"/>
+    </logger>
+
+</configuration>
